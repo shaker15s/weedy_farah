@@ -136,7 +136,19 @@
         body.has-custom-cursor label {
           cursor: none;
         }
+  body.has-custom-cursor .cursor-ring-custom,
+  body.has-custom-cursor .cursor-dot-custom {
+    display: block;
+  }
       }
+@media (hover: none), (pointer: coarse) {
+.cursor-ring-custom,
+.cursor-dot-custom {
+display: none !important;
+opacity: 0 !important;
+pointer-events: none !important;
+}
+}
 
       .cursor-dot-custom {
         position: fixed;
@@ -4164,17 +4176,28 @@
         }
       })();
 
-      /* ================== CUSTOM CURSOR ================== */
-      (function setupCursor() {
-        const ring = document.getElementById("cursorRing");
-        const dot = document.getElementById("cursorDot");
-        if (!ring || !dot) return;
-        let mx = window.innerWidth / 2,
-          my = window.innerHeight / 2,
-          rx = window.innerWidth / 2,
-          ry = window.innerHeight / 2,
-          angle = 0,
-          initialized = false;
+/* ================== CUSTOM CURSOR ================== */
+(function setupCursor() {
+const ring = document.getElementById("cursorRing");
+const dot = document.getElementById("cursorDot");
+if (!ring || !dot) return;
+
+/* Never enable on touch-first devices */
+const isTouch = ("ontouchstart" in window ||
+navigator.maxTouchPoints > 0 ||
+matchMedia("(pointer: coarse)").matches);
+if (isTouch) {
+ring.style.display = "none";
+dot.style.display = "none";
+return;
+}
+
+let mx = window.innerWidth / 2,
+my = window.innerHeight / 2,
+rx = window.innerWidth / 2,
+ry = window.innerHeight / 2,
+angle = 0,
+initialized = false;
 
         window.addEventListener("mousemove", (e) => {
           mx = e.clientX;
